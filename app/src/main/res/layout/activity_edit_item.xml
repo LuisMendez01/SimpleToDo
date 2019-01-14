@@ -10,10 +10,11 @@
         android:id="@+id/etItemText"
         android:layout_width="381dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
         android:ems="10"
         android:hint="Enter Item Description"
         android:inputType="textMultiLine"
-        tools:layout_editor_absoluteX="0dp"
+        app:layout_constraintStart_toStartOf="parent"
         tools:layout_editor_absoluteY="5dp" />
 
     <Button
