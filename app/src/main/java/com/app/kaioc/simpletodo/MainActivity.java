@@ -3,6 +3,7 @@ package com.app.kaioc.simpletodo;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -12,6 +13,9 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.app.kaioc.simpletodo.dialogFragments.CustomDialogFragment;
+import com.app.kaioc.simpletodo.dialogFragments.CustomDialogFragment.CustomDialogListener;
+
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -19,7 +23,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements CustomDialogListener {
 
     //a numeric code to identify the edit activity
     public final static int EDIT_REQUEST_CODE = 20;
@@ -28,10 +32,15 @@ public class MainActivity extends AppCompatActivity {
     public final static String ITEM_TEXT = "itemText";
     public final static String ITEM_POSITION = "itemPosition";
 
-
     ArrayList<String> items;
     ArrayAdapter<String> itemsAdapter;
     ListView lvItems;
+
+//    // Construct the data source
+//    ArrayList<Note> arrayOfNotes = new ArrayList<Note>();
+//    // Create the adapter to convert the array to views
+//    NotesAdapter notesAdapter;
+//    ListView lvItems;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,14 +52,59 @@ public class MainActivity extends AppCompatActivity {
         itemsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, items);
         lvItems = findViewById(R.id.lvItems);
         lvItems.setAdapter(itemsAdapter);
+//        notesAdapter = new NotesAdapter(this, arrayOfNotes);
+//        lvItems = findViewById(R.id.lvItems);
+//        lvItems.setAdapter(notesAdapter);
 
         //mock data
-//        items.add("First item");
-//        items.add("XXX");
-//        items.add("Loco");
+//        arrayOfNotes.add( new Note("First", "item"));
+//        arrayOfNotes.add( new Note("Second", "item"));
+//        arrayOfNotes.add( new Note("Third", "item"));
 
         setupListViewListener();
+        //showAlertDialog();//This is called when on click listener
     }
+
+    //creates a new dialog fragment
+    private void showEditDialog(String item, int pos) {
+        FragmentManager fm = getSupportFragmentManager();
+        CustomDialogFragment customDialogFragment = CustomDialogFragment.newInstance("Edit Item");
+
+        // Supply num input as an argument.
+        Bundle args = new Bundle();
+        //get title from CustomDialogFragment in newInstance creation of the obj which is same one
+        //I am passing above, so that in CustomDialogFragment in function onViewCreated() title
+        //can be get and set there.
+        args.putString("title", customDialogFragment.getArguments().getString("title"));
+        args.putString("item", item);
+        args.putInt("pos", pos);
+        customDialogFragment.setArguments(args);
+
+        customDialogFragment.show(fm, "dialog_fragment");//dialog_fragment.xml
+    }
+
+    //remember the alert dialog fragment does not need an .xml, it's built-in
+//    private void showAlertDialog() {
+//        FragmentManager fm = getSupportFragmentManager();
+//        MyAlertDialogFragment alertDialog = MyAlertDialogFragment.newInstance("Some title");
+//        alertDialog.show(fm, "fragment_alert");
+//    }
+
+    // 3. This method is invoked in the activity when the listener is triggered
+    // Access the data result passed to the activity here
+    @Override
+    public void onFinishEditDialog(String inputText, int position) {
+        //Toast.makeText(this, "Hi, " + inputText, Toast.LENGTH_SHORT).show();String updatedItem = data.getExtras().getString(ITEM_TEXT);
+
+        items.set(position, inputText);
+        //notify the adapter that the model changed
+        itemsAdapter.notifyDataSetChanged();
+        //persist the changed model
+        writeItems();
+        //notify the user the operation completed ok
+        Toast.makeText(this, "Item Updated Succesfully", Toast.LENGTH_SHORT).show();
+    }
+
 
     public void onAddItem(View V){
 
@@ -67,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
         lvItems.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.i("MainActivity", "Item removed from list postion: " + position);
+                Log.i("MainActivity", "Item removed from list position: " + position);
                 items.remove(position);
                 itemsAdapter.notifyDataSetChanged();
                 writeItems();//writing to the file todo.txt all items in the list
@@ -79,14 +133,17 @@ public class MainActivity extends AppCompatActivity {
         lvItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //create the new activity
-                Intent i = new Intent(MainActivity.this, EditItemActivity.class);
-                i.putExtra(ITEM_TEXT, items.get(position));
-                i.putExtra(ITEM_POSITION, position);
 
-                startActivityForResult(i, EDIT_REQUEST_CODE);
-                //pass the data being edited
-                //display the activity
+                showEditDialog(items.get(position), position);//popup dialog fragment
+
+//                //create the new activity
+//                Intent i = new Intent(MainActivity.this, EditItemActivity.class);
+//                i.putExtra(ITEM_TEXT, items.get(position));
+//                i.putExtra(ITEM_POSITION, position);
+//
+//                startActivityForResult(i, EDIT_REQUEST_CODE);
+//                //pass the data being edited
+//                //display the activity
             }
         });
     }
@@ -131,6 +188,7 @@ public class MainActivity extends AppCompatActivity {
     private void writeItems(){
         try {
             FileUtils.writeLines(getDataFile(),items);
+            Log.d("Main Activity File Path", getDataFile().getAbsolutePath());
         } catch (IOException e) {
             Log.e("Main Activity writeItems()", "error reading file!", e);
         }

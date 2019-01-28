@@ -6,6 +6,61 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+
+        <!-- Apply default style for dialogs -->
+        <item name="android:dialogTheme">@style/AppDialogTheme</item>
+        <!-- Apply default style for alert dialogs -->
+        <item name="android:alertDialogTheme">@style/AppAlertTheme</item>
+    </style>
+
+    <!-- Define your custom dialog theme here extending from base -->
+    <style name="AppDialogTheme" parent="Theme.AppCompat.Light.Dialog">
+        <!-- Define color properties as desired -->
+        <!-- This is for message Enter Your Name-->
+        <!--<item name="colorPrimary">@color/cream</item>-->
+        <!--<item name="colorPrimaryDark">#000</item>-->
+        <!-- this is for title of the Dialog box-->
+        <!--<item name="android:textColorHighlight">@color/white</item>-->
+
+        <!-- This is the line under the text along with the blinking cursor-->
+        <item name="colorAccent">@color/cream</item>
+
+        <!-- This is for title text and Enter Your Name text color-->
+        <item name="android:textColor">@color/cream</item>
+
+        <!-- Typed text -->
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:textColorSecondary">@color/cream</item>
+
+        <!-- Define window properties as desired -->
+        <item name="android:windowTitleStyle">@style/DialogWindowTitle</item>
+        <item name="android:windowNoTitle">false</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowBackground">@color/light_blue</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowCloseOnTouchOutside">true</item>
+    </style>
+
+    <!-- All this is for the title box-->
+    <style name="DialogWindowTitle" parent="Base.DialogWindowTitle.AppCompat">
+        <item name="android:background">@color/light_blue</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:textAppearance">@style/DialogWindowTitleText</item>
+    </style>
+
+    <style name="DialogWindowTitleText" parent="@android:style/TextAppearance.DialogWindowTitle">
+        <item name="android:textSize">24sp</item>
+    </style>
+
+    <!-- Define your custom alert theme here extending from base -->
+    <style name="AppAlertTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorPrimary">@color/dark_blue</item>
+        <item name="colorAccent">@color/dark_blue</item>
+        <item name="colorPrimaryDark">#000</item>
+        <item name="colorControlNormal">@color/dark_blue</item>
+        <item name="android:textColorHighlight">@color/light_blue</item>
+        <item name="android:windowTitleStyle">@style/DialogWindowTitle</item>
+        <!-- ...other stuff here... -->
     </style>
 
 </resources>
